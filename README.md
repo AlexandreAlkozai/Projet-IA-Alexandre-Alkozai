@@ -7,10 +7,10 @@ d'entraînement ; ce projet ne fournit pas de mesure de performance garantie.
 
 ## Où trouver les programmes ?
 
-1. **Analyse du jeu de données** : [programme d'analyse](01_analyse_du_dataset/analyse_dataset.py).
-2. **Création des images recadrées** : [programme de création des crops](02_creation_des_crops/creation_crops.py).
+1. **Analyse du jeu de données** : [programme d'analyse](Programme%20analyse%20de%20dossier/analyse_dataset.py).
+2. **Création des images recadrées** : [programme de création des crops](programme%20pour%20cr%C3%A9er%20des%20crops/creation_crops.py).
 3. **Classification des avions** : [entraînement du classifieur](03_classification/entrainement_classifieur.py).
-4. **Détection dans une scène complète** : [entraînement du détecteur](04_detection_des_scenes/entrainement_detection.py), qui utilise [detection_avions.py](fichiers_techniques/detection_avions.py).
+4. **Détection dans une scène complète** : [entraînement du détecteur](Programme%20pour%20d%C3%A9tection%20sur%20la%20sc%C3%A9ne%20compl%C3%A9te/entrainement_detection.py), qui utilise [detection_avions.py](fichiers_techniques/detection_avions.py).
 
 **Résultats annotés** : voir [Test annoté par le modèle](Test%20annot%C3%A9%20par%20le%20mod%C3%A8le), avec une archive pour les scènes complètes et une pour les crops.
 
@@ -80,7 +80,7 @@ Lancer les scripts individuellement avec Python et suivre leurs invites pour
 indiquer le jeu de données local. Par exemple, depuis la racine du dépôt :
 
 ```powershell
-.\.venv\Scripts\python.exe 01_analyse_du_dataset\analyse_dataset.py
+.\.venv\Scripts\python.exe "Programme analyse de dossier\analyse_dataset.py"
 ```
 
 Le détecteur `detection_avions.py` accepte aussi `--dataset` ; sans ce paramètre,
