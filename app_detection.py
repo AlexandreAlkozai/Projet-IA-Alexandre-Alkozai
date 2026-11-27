@@ -6,19 +6,29 @@ import torch
 from PIL import Image, ImageDraw
 from torch import nn
 from torchvision import models, transforms
+from torchvision.ops import nms
 from torchvision.transforms.functional import to_tensor
 
 from fichiers_techniques.detection_avions import construire_modele
 
 
-DOSSIER = Path(__file__).resolve().parent
-CHECKPOINT = DOSSIER / "fichiers_techniques" / "detecteur_8_epoques.pt"
-CLASSIFIER_CHECKPOINT = DOSSIER / "fichiers_techniques" / "modele_avions.pt"
-HERO_IMAGE = DOSSIER / "f14_nasa.jpg"
+CHECKPOINT = Path(__file__).resolve().parent / "fichiers_techniques" / "detecteur_8_epoques.pt"
+CLASSIFIER_CHECKPOINT = Path(__file__).resolve().parent / "fichiers_techniques" / "modele_avions.pt"
+HERO_IMAGES = [
+    Path(__file__).resolve().parent / "images_banniere" / f"avion_{i}.jpg"
+    for i in range(1, 5)
+]
 COULEURS = [
     "#ff4b4b", "#00a6fb", "#f7b801", "#2ec4b6", "#9b5de5",
     "#f15bb5", "#70e000", "#ff7f11", "#3a86ff", "#8338ec",
 ]
+
+
+def selectionner_detections(boites, scores, seuil):
+    candidats = (scores >= seuil).nonzero().flatten()
+    # Une même boîte peut recevoir plusieurs classes ; préserver les avions proches.
+    gardes = nms(boites[candidats], scores[candidats], 0.6)
+    return candidats[gardes].tolist()
 
 
 @st.cache_resource
@@ -65,17 +75,53 @@ PREPARER_CROP = transforms.Compose([
 
 
 st.set_page_config(page_title="AeroScope | Détection", page_icon="✈️", layout="wide")
-st.markdown('<style>.stApp{background:#071116}'
-            '[data-testid="stFileUploader"] section{border:1px dashed '
-            'rgba(118,247,197,.42);border-radius:12px;background:rgba(14,34,39,.7)}'
-            '</style>', unsafe_allow_html=True)
+st.markdown(
+    """
+    <style>
+    .stApp { background: #071116; }
+    .block-container { padding-top: 2rem; padding-bottom: 2rem; }
+    [data-testid="stFileUploader"] section {
+        border: 1px dashed rgba(118,247,197,.42);
+        border-radius: 12px;
+        background: rgba(14,34,39,.7);
+    }
+    .st-key-choixmode [data-testid="stRadioOption"] {
+        border: 1px solid rgba(118,247,197,.22);
+        border-radius: 10px;
+        padding: .5rem .85rem;
+        background: #0e2227;
+    }
+    .st-key-choixmode [data-testid="stRadioOption"][data-selected="true"] {
+        border-color: #76f7c5;
+        background: #163a35;
+    }
+    [data-testid="stMetric"] {
+        border-color: rgba(118,247,197,.25);
+        border-radius: 12px;
+        background: #0e2227;
+    }
+    [data-testid="stTable"] {
+        border: 1px solid rgba(118,247,197,.25);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .st-key-photoresultat [data-testid="stImage"] img {
+        max-height: 55vh;
+        max-width: 100%;
+        width: auto;
+        object-fit: contain;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 st.markdown(
     """
     <style>
     .page-title {
-        padding: 1.25rem 1.5rem;
-        margin-bottom: 1rem;
+        padding: .8rem 1.25rem;
+        margin-bottom: .5rem;
         border: 1px solid rgba(118, 247, 197, .25);
         border-left: 4px solid #76f7c5;
         border-radius: 14px;
@@ -95,39 +141,68 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-if HERO_IMAGE.is_file():
-    photo = base64.b64encode(HERO_IMAGE.read_bytes()).decode("ascii")
+if all(chemin.is_file() for chemin in HERO_IMAGES):
+    photos = [
+        base64.b64encode(chemin.read_bytes()).decode("ascii")
+        for chemin in HERO_IMAGES
+    ]
     st.markdown(
         f"""
         <style>
         .hero {{
-            min-height: 300px;
-            display: flex;
-            align-items: flex-end;
-            box-sizing: border-box;
-            padding: 2rem;
-            margin-bottom: 1.25rem;
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            height: 210px;
+            margin-bottom: .5rem;
             border: 1px solid rgba(118, 247, 197, .25);
             border-radius: 14px;
-            background-image:
-                linear-gradient(90deg, rgba(3, 10, 14, .78), rgba(3, 10, 14, .08)),
-                url("data:image/jpeg;base64,{photo}");
-            background-size: cover;
-            background-position: center 48%;
+            overflow: hidden;
+        }}
+        .hero img {{
+            width: 100%;
+            height: 100%;
+            min-height: 0;
+            object-fit: cover;
+        }}
+        .hero img:nth-child(1) {{ object-position: center 54%; }}
+        .hero img:nth-child(2) {{ object-position: 55% 60%; }}
+        .hero img:nth-child(3) {{ object-position: 25% 60%; }}
+        .hero img:nth-child(4) {{ object-position: center; }}
+        .hero-description {{
+            margin: 0 0 .5rem;
+            color: #d7eee5;
+            font-size: .95rem;
+        }}
+        @media (max-width: 600px) {{
+            .hero {{ grid-template-columns: repeat(2, minmax(0, 1fr)); height: 240px; }}
         }}
         </style>
-        <div class="hero"></div>
+        <div class="hero" aria-label="Quatre avions en vol">
+            <img src="data:image/jpeg;base64,{photos[0]}" alt="">
+            <img src="data:image/jpeg;base64,{photos[1]}" alt="">
+            <img src="data:image/jpeg;base64,{photos[2]}" alt="">
+            <img src="data:image/jpeg;base64,{photos[3]}" alt="">
+        </div>
+        <p class="hero-description">Identifiez un avion ou repérez les appareils dans une scène complète.</p>
         """,
         unsafe_allow_html=True,
     )
+else:
+    st.error("Les photos de la bannière sont introuvables dans le dossier du projet.")
 
 seuil = 0.5
-mode = st.radio(
-    "Mode",
-    ["Crop", "Scène complète"],
-    horizontal=True,
-    label_visibility="collapsed",
-)
+with st.container(key="choixmode"):
+    mode = st.radio(
+        "Mode",
+        ["Crop", "Scène complète"],
+        horizontal=True,
+        label_visibility="collapsed",
+    )
+    if mode == "Crop":
+        st.caption("Crop : identifiez le modèle d'un avion déjà cadré.")
+    else:
+        st.caption("Scène complète : détectez et identifiez les avions dans l'image.")
 fichier = st.file_uploader(
     "Image",
     type=["jpg", "jpeg", "png"],
@@ -153,8 +228,10 @@ if fichier is not None:
         with torch.inference_mode():
             probabilites = torch.softmax(modele(entree), dim=1)[0].cpu()
         valeurs, indices = torch.topk(probabilites, k=min(3, len(classes)))
-        st.image(image, width="stretch")
-        st.metric("Classe prédite", classes[indices[0].item()])
+        st.markdown("#### Résultat")
+        with st.container(key="photoresultat"):
+            st.image(image, width="stretch")
+        st.metric("Classe prédite", classes[indices[0].item()], border=True)
         st.table([
             {
                 "Classe": classes[indice.item()],
@@ -175,11 +252,7 @@ if fichier is not None:
         boites = sortie["boxes"].detach().cpu()
         etiquettes = sortie["labels"].detach().cpu()
         scores = sortie["scores"].detach().cpu()
-        indices = sorted(
-            (scores >= seuil).nonzero().flatten().tolist(),
-            key=lambda i: scores[i].item(),
-            reverse=True,
-        )
+        indices = selectionner_detections(boites, scores, seuil)
 
         annotee = image.copy()
         dessin = ImageDraw.Draw(annotee)
@@ -194,8 +267,10 @@ if fichier is not None:
             dessin.rectangle(boite_texte, fill=couleur)
             dessin.text((x1, y1), texte, fill="white")
 
-        st.metric("Avions détectés", len(indices))
-        st.image(annotee, width="stretch")
+        st.markdown("#### Résultat")
+        st.metric("Avions détectés", len(indices), border=True)
+        with st.container(key="photoresultat"):
+            st.image(annotee, width="stretch")
         if indices:
             st.table([
                 {

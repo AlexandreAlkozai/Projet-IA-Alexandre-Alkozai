@@ -13,8 +13,8 @@ d'entraînement ; ce projet ne fournit pas de mesure de performance garantie.
 4. **Détection dans une scène complète** : [entraînement du détecteur](04_detection_des_scenes/entrainement_detection.py), qui utilise [detection_avions.py](fichiers_techniques/detection_avions.py).
 
 **Site / application Streamlit** : le code est dans
-[app_detection.py](app_detection.py), à la racine du dépôt. Le site n'est pas
-encore déployé : ce lien ouvre le code, pas une application en ligne. Les
+[app_detection.py](app_detection.py), à la racine du dépôt. Ce lien ouvre le
+code, pas une application en ligne. Les
 étapes de lancement local et de déploiement sont indiquées ci-dessous.
 
 Le dossier [fichiers_techniques](fichiers_techniques) regroupe le code du
@@ -23,10 +23,8 @@ détecteur et les modèles `detecteur_8_epoques.pt` (environ 331 Mo) et
 son optimiseur. Les fichiers de configuration nécessaires restent à la racine.
 Ces fichiers sont regroupés, mais restent publics.
 
-Les modèles sont des copies inchangées des fichiers fournis. Le jeu de données
-et l'image de bannière ne sont pas inclus. L'application fonctionne sans
-bannière ; pour en ajouter une, placer une image JPEG autorisée nommée
-`f14_nasa.jpg` à côté de `app_detection.py`.
+Les modèles sont des copies inchangées des fichiers fournis. Les quatre images
+de la bannière sont dans `images_banniere`. Le jeu de données n'est pas inclus.
 
 ## Utilisation locale sous Windows
 
