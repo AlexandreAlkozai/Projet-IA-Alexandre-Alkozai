@@ -15,14 +15,15 @@ if not annotations.is_dir() or annotations.name.lower() != "annotations":
 if images.resolve().parent != annotations.resolve().parent:
     raise ValueError("Les dossiers images et annotations doivent avoir le même parent.")
 
-script = Path(__file__).resolve().parent.parent / "detection_avions.py"
+racine = Path(__file__).resolve().parent.parent
+script = racine / "fichiers_techniques" / "detection_avions.py"
 
 if not script.is_file():
     raise FileNotFoundError(f"Fichier introuvable : {script}")
 
 resultats = Path(tempfile.mkdtemp(
     prefix="test_detection_",
-    dir=script.parent
+    dir=racine
 ))
 modele = resultats / "detecteur_8_epoques.pt"
 

@@ -8,12 +8,12 @@ from torch import nn
 from torchvision import models, transforms
 from torchvision.transforms.functional import to_tensor
 
-from detection_avions import construire_modele
+from fichiers_techniques.detection_avions import construire_modele
 
 
 DOSSIER = Path(__file__).resolve().parent
-CHECKPOINT = DOSSIER / "detecteur_8_epoques.pt"
-CLASSIFIER_CHECKPOINT = DOSSIER / "modele_avions.pt"
+CHECKPOINT = DOSSIER / "fichiers_techniques" / "detecteur_8_epoques.pt"
+CLASSIFIER_CHECKPOINT = DOSSIER / "fichiers_techniques" / "modele_avions.pt"
 HERO_IMAGE = DOSSIER / "f14_nasa.jpg"
 COULEURS = [
     "#ff4b4b", "#00a6fb", "#f7b801", "#2ec4b6", "#9b5de5",

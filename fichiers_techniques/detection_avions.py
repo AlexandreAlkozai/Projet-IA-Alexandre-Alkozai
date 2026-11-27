@@ -15,7 +15,7 @@ from torchvision.ops import box_iou
 from torchvision.transforms.functional import to_tensor
 
 
-DATASET = Path(__file__).resolve().parent / "dataset"
+DATASET = Path(__file__).resolve().parent.parent / "dataset"
 CLASSES = ["fond"] + [f"A{i}" for i in range(1, 21)]
 
 

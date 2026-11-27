@@ -10,16 +10,18 @@ d'entraînement ; ce projet ne fournit pas de mesure de performance garantie.
 1. **Analyse du jeu de données** : [programme d'analyse](01_analyse_du_dataset/analyse_dataset.py).
 2. **Création des images recadrées** : [programme de création des crops](02_creation_des_crops/creation_crops.py).
 3. **Classification des avions** : [entraînement du classifieur](03_classification/entrainement_classifieur.py).
-4. **Détection dans une scène complète** : [entraînement du détecteur](04_detection_des_scenes/entrainement_detection.py), qui utilise [detection_avions.py](detection_avions.py).
+4. **Détection dans une scène complète** : [entraînement du détecteur](04_detection_des_scenes/entrainement_detection.py), qui utilise [detection_avions.py](fichiers_techniques/detection_avions.py).
 
 **Site / application Streamlit** : le code est dans
 [app_detection.py](app_detection.py), à la racine du dépôt. Le site n'est pas
 encore déployé : ce lien ouvre le code, pas une application en ligne. Les
 étapes de lancement local et de déploiement sont indiquées ci-dessous.
 
-À la racine se trouvent aussi `detecteur_8_epoques.pt` (environ 331 Mo),
-`modele_avions.pt` (environ 95 Mo) et `requirements.txt`. Le détecteur contient
-également l'état de son optimiseur.
+Le dossier [fichiers_techniques](fichiers_techniques) regroupe le code du
+détecteur et les modèles `detecteur_8_epoques.pt` (environ 331 Mo) et
+`modele_avions.pt` (environ 95 Mo). Le détecteur contient également l'état de
+son optimiseur. Les fichiers de configuration nécessaires restent à la racine.
+Ces fichiers sont regroupés, mais restent publics.
 
 Les modèles sont des copies inchangées des fichiers fournis. Le jeu de données
 et l'image de bannière ne sont pas inclus. L'application fonctionne sans
@@ -84,8 +86,8 @@ indiquer le jeu de données local. Par exemple, depuis la racine du dépôt :
 Le détecteur `detection_avions.py` accepte aussi `--dataset` ; sans ce paramètre,
 il cherche un dossier `dataset` à la racine. Le programme de l'étape 4 lance
 un entraînement de huit époques. Celui de l'étape 3 lance un entraînement et
-**écrase** le fichier `modele_avions.pt` à la racine à la fin : conserver une
-sauvegarde avant de l'utiliser.
+**écrase** le fichier `fichiers_techniques/modele_avions.pt` à la fin :
+conserver une sauvegarde avant de l'utiliser.
 Les entraînements peuvent télécharger des poids préentraînés et nécessitent le
 jeu de données, qui n'est pas fourni ici.
 
