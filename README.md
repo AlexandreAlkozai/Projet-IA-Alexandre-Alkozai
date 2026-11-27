@@ -5,16 +5,21 @@ un avion, et **Scène complète** détecte et classe les avions présents dans u
 image. Les résultats dépendent des modèles fournis et de leurs données
 d'entraînement ; ce projet ne fournit pas de mesure de performance garantie.
 
-## Contenu
+## Où trouver les programmes ?
 
-- `app_detection.py` : interface Streamlit.
-- `detection_avions.py` : architecture et entraînement du détecteur.
-- `detecteur_8_epoques.pt` : détecteur fourni, avec état d'optimiseur (environ
-  331 Mo).
-- `modele_avions.pt` : classifieur fourni (environ 95 Mo).
-- `analyse_dataset.py`, `creation_crops.py`, `entrainement_classifieur.py` et
-  `entrainement_detection.py` : les quatre scripts d'étapes fournis.
-- `requirements.txt` : dépendances Python de l'application et des scripts.
+1. **Analyse du jeu de données** : [programme d'analyse](01_analyse_du_dataset/analyse_dataset.py).
+2. **Création des images recadrées** : [programme de création des crops](02_creation_des_crops/creation_crops.py).
+3. **Classification des avions** : [entraînement du classifieur](03_classification/entrainement_classifieur.py).
+4. **Détection dans une scène complète** : [entraînement du détecteur](04_detection_des_scenes/entrainement_detection.py), qui utilise [detection_avions.py](detection_avions.py).
+
+**Site / application Streamlit** : le code est dans
+[app_detection.py](app_detection.py), à la racine du dépôt. Le site n'est pas
+encore déployé : ce lien ouvre le code, pas une application en ligne. Les
+étapes de lancement local et de déploiement sont indiquées ci-dessous.
+
+À la racine se trouvent aussi `detecteur_8_epoques.pt` (environ 331 Mo),
+`modele_avions.pt` (environ 95 Mo) et `requirements.txt`. Le détecteur contient
+également l'état de son optimiseur.
 
 Les modèles sont des copies inchangées des fichiers fournis. Le jeu de données
 et l'image de bannière ne sont pas inclus. L'application fonctionne sans
@@ -36,37 +41,15 @@ PNG. Si le projet a été cloné, récupérer les véritables modèles avec Git 
 `git lfs pull`. Sans eux, les fichiers `.pt` peuvent être de simples pointeurs.
 Ne charger que des checkpoints de confiance.
 
-## Publication GitHub, seulement après autorisation
+## Modèles et Git LFS
 
 Le détecteur dépasse la limite GitHub de 100 MiB pour un fichier Git ordinaire.
 Le fichier `.gitattributes` prépare donc **les deux fichiers `.pt` pour Git LFS**.
 Ne pas les ajouter par l'interface web de GitHub. Vérifier les droits de
-publication du code et des modèles, le quota et le budget LFS avant de publier.
+publication du code et des modèles, le quota et le budget LFS avant une mise à jour.
 Les téléchargements et déploiements consomment la bande passante du propriétaire
 du dépôt ; les nouvelles versions des modèles consomment du stockage
 supplémentaire.
-
-1. Choisir le compte GitHub et le nom du dépôt ; après autorisation, créer un
-   dépôt **public vide**, sans README ni autre fichier initial.
-2. Dans PowerShell, depuis ce dossier, préparer le dépôt local et vérifier que
-   les deux modèles apparaissent dans `git lfs ls-files` :
-
-   ```powershell
-   git init -b main
-   git lfs install --local
-   git add .
-   git lfs ls-files
-   git status --short
-   git commit -m "Ajouter AeroScope"
-   ```
-
-3. Après confirmation explicite de l'envoi public, remplacer l'URL ci-dessous par
-   celle du dépôt vide créé sur GitHub :
-
-   ```powershell
-   git remote add origin https://github.com/COMPTE/NOM-DU-DEPOT.git
-   git push -u origin main
-   ```
 
 Le téléchargement ZIP GitHub ne contient pas forcément les objets LFS. Pour
 obtenir les modèles, préférer `git clone` avec Git LFS installé puis
@@ -92,11 +75,17 @@ sur CPU.
 ## Scripts du projet
 
 Lancer les scripts individuellement avec Python et suivre leurs invites pour
-indiquer le jeu de données local. Le détecteur accepte aussi `--dataset` ; sans
-ce paramètre, il cherche un dossier `dataset` à côté du script. Le script
-`entrainement_detection.py` lance un entraînement de huit époques.
-`entrainement_classifieur.py` lance un entraînement et **écrase**
-`modele_avions.pt` à la fin : conserver une sauvegarde avant de l'utiliser.
+indiquer le jeu de données local. Par exemple, depuis la racine du dépôt :
+
+```powershell
+.\.venv\Scripts\python.exe 01_analyse_du_dataset\analyse_dataset.py
+```
+
+Le détecteur `detection_avions.py` accepte aussi `--dataset` ; sans ce paramètre,
+il cherche un dossier `dataset` à la racine. Le programme de l'étape 4 lance
+un entraînement de huit époques. Celui de l'étape 3 lance un entraînement et
+**écrase** le fichier `modele_avions.pt` à la racine à la fin : conserver une
+sauvegarde avant de l'utiliser.
 Les entraînements peuvent télécharger des poids préentraînés et nécessitent le
 jeu de données, qui n'est pas fourni ici.
 

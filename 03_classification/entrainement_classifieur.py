@@ -106,7 +106,7 @@ for epoque in range(nombre_epoques):
     )
 
 # Enregistrer le modèle dans le format attendu par l'application
-chemin_modele = Path(__file__).resolve().parent / "modele_avions.pt"
+chemin_modele = Path(__file__).resolve().parent.parent / "modele_avions.pt"
 
 torch.save(
     {
