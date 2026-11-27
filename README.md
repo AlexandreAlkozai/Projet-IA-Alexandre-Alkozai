@@ -12,6 +12,8 @@ d'entraînement ; ce projet ne fournit pas de mesure de performance garantie.
 3. **Classification des avions** : [entraînement du classifieur](03_classification/entrainement_classifieur.py).
 4. **Détection dans une scène complète** : [entraînement du détecteur](04_detection_des_scenes/entrainement_detection.py), qui utilise [detection_avions.py](fichiers_techniques/detection_avions.py).
 
+**Résultats annotés** : voir [Test annoté par le modèle](Test%20annot%C3%A9%20par%20le%20mod%C3%A8le), avec une archive pour les scènes complètes et une pour les crops.
+
 **Site / application Streamlit** : le code est dans
 [app_detection.py](app_detection.py), à la racine du dépôt. Ce lien ouvre le
 code, pas une application en ligne. Les
